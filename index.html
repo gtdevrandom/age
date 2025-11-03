@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mon âge en direct</title>
+  <style>
+    :root{--bg:#0f172a;--card:#0b1220;--accent:#7dd3fc;--muted:#94a3b8}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{display:grid;place-items:center;background:linear-gradient(180deg,#071131 0%,#001827 100%);color:whitesmoke}
+    .card{width:clamp(320px,48vw,720px);background:rgba(255,255,255,0.03);backdrop-filter:blur(6px);border-radius:18px;padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    h1{margin:0 0 10px 0;font-weight:600;font-size:1.25rem;letter-spacing:-0.02em}
+    p.lead{margin:0 0 20px 0;color:var(--muted);font-size:0.95rem}
+    .age{display:flex;gap:12px;flex-wrap:wrap}
+    .unit{flex:1 1 120px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;text-align:center}
+    .value{font-size:2.4rem;font-weight:700;line-height:1}
+    .label{font-size:0.85rem;color:var(--muted);margin-top:6px}
+    footer{margin-top:18px;text-align:right;color:var(--muted);font-size:0.85rem}
+    .tiny{font-size:0.75rem;color:var(--muted)}
+    @media (max-width:420px){.value{font-size:1.6rem}}
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <h1>Âge en direct</h1>
+    <div class="age" aria-live="polite">
+      <div class="unit"><div id="years" class="value">—</div><div class="label">ans</div></div>
+      <div class="unit"><div id="months" class="value">—</div><div class="label">mois</div></div>
+      <div class="unit"><div id="days" class="value">—</div><div class="label">jours</div></div>
+      <div class="unit"><div id="hours" class="value">—</div><div class="label">heures</div></div>
+      <div class="unit"><div id="minutes" class="value">—</div><div class="label">minutes</div></div>
+      <div class="unit"><div id="seconds" class="value">—</div><div class="label">secondes</div></div>
+    </div>
+  </main>
+
+  <script>
+    // Date de naissance (année, moisIndex (0=janvier), jour, heure, minute, seconde)
+    // Ici : 12 novembre 2008 à 00:00:00 local
+    const birth = new Date(2008, 10, 12, 0, 0, 0);
+
+    const el = {
+      years: document.getElementById('years'),
+      months: document.getElementById('months'),
+      days: document.getElementById('days'),
+      hours: document.getElementById('hours'),
+      minutes: document.getElementById('minutes'),
+      seconds: document.getElementById('seconds')
+    };
+
+    function update() {
+      const now = new Date();
+
+      // Calcul des années complètes
+      let years = now.getFullYear() - birth.getFullYear();
+      // Ajuster si l'anniversaire de cette année n'est pas encore passé
+      const thisYearBirthday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate(), birth.getHours(), birth.getMinutes(), birth.getSeconds());
+      if (now < thisYearBirthday) years--;
+
+      // Calcul des mois complets après les années
+      let months = now.getMonth() - birth.getMonth();
+      if (now.getDate() < birth.getDate()) months--;
+      // Ajuster avec les années
+      months = (months + 12) % 12;
+
+      // Construire la date de l'anniversaire le plus récent
+      const lastBirthday = new Date(birth.getTime());
+      lastBirthday.setFullYear(birth.getFullYear() + years);
+      lastBirthday.setMonth(birth.getMonth() + months);
+
+      // Si la construction dépasse (cas où le mois n'a pas autant de jours), on corrige
+      while (lastBirthday > now) {
+        // retirer un jour jusqu'à être <= now
+        lastBirthday.setDate(lastBirthday.getDate() - 1);
+      }
+
+      // Diff restante en ms
+      let remMs = now - lastBirthday;
+
+      const days = Math.floor(remMs / (1000 * 60 * 60 * 24));
+      remMs -= days * (1000 * 60 * 60 * 24);
+      const hours = Math.floor(remMs / (1000 * 60 * 60));
+      remMs -= hours * (1000 * 60 * 60);
+      const minutes = Math.floor(remMs / (1000 * 60));
+      remMs -= minutes * (1000 * 60);
+      const seconds = Math.floor(remMs / 1000);
+
+      // Affichage
+      el.years.textContent = years.toString();
+      el.months.textContent = months.toString();
+      el.days.textContent = days.toString();
+      el.hours.textContent = hours.toString().padStart(2,'0');
+      el.minutes.textContent = minutes.toString().padStart(2,'0');
+      el.seconds.textContent = seconds.toString().padStart(2,'0');
+    }
+
+    // Première mise à jour puis intervalle (500 ms pour fluidité)
+    update();
+    setInterval(update, 500);
+  </script>
+</body>
+</html>
