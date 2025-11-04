@@ -2,9 +2,9 @@ const CACHE_NAME = "age";
 const urlsToCache = [
   "./",
   "./index.html",
+  "./favicon.ico",
   "./manifest.json"
 ];
-
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -20,4 +20,5 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
