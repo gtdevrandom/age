@@ -1,8 +1,7 @@
-const CACHE_NAME = "liste-de-courses-cache-v1";
+const CACHE_NAME = "age";
 const urlsToCache = [
   "./",
   "./index.html",
-  "./favicon.ico",
   "./manifest.json"
 ];
 
@@ -21,3 +20,4 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
