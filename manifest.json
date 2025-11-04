@@ -1,0 +1,15 @@
+{
+  "name": "Liste de Courses",
+  "short_name": "Courses",
+  "start_url": "index.html",
+  "display": "standalone",
+  "theme_color": "#0e11c5",
+  "background_color": "#121212",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "512x512",
+      "type": "image/x-icon"
+    }
+  ]
+}
